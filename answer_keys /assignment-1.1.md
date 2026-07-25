@@ -179,3 +179,202 @@ Therefore:
 - A **positive weight** indicates a positive relationship between the feature and energy output.
 - A **negative weight** indicates an inverse relationship.
 - The **magnitude** of the weight indicates how strongly the feature influences the prediction.
+
+# Part 2 – The Stochastic Argument (Theoretical Foundation)
+
+## Q3. Refuting Determinism
+
+Although the laws of physics are deterministic, it is **impossible to derive an exact analytical function** $y=f(x)$ for predicting daily solar energy output in this environment because many influential factors are either **unmeasured**, **unknown**, or **inherently random**.
+
+For example, two days may have the same sunlight duration, yet produce different amounts of energy due to:
+
+- Dust accumulation on the solar panels
+- Ambient temperature variations
+- Cloud density
+- Wind speed
+- Sensor measurement errors
+- Equipment efficiency degradation
+
+These factors introduce **Aleatoric Uncertainty**, which refers to the natural randomness or noise present in the data generation process. Unlike uncertainty caused by a lack of knowledge (epistemic uncertainty), aleatoric uncertainty **cannot be completely eliminated**, even if we collect more data.
+
+Therefore, instead of assuming a deterministic relationship
+
+$$
+y=f(x),
+$$
+
+we model the output using a stochastic formulation
+
+$$
+y=f(x)+\epsilon,
+$$
+
+where:
+
+- $f(x)$ represents the systematic relationship learned by the model.
+- $\epsilon$ represents random noise (aleatoric uncertainty), accounting for unpredictable environmental factors and measurement errors.
+
+Consequently, the machine learning model does not attempt to predict the exact energy output. Instead, it learns the underlying trend while treating the residual variation as random noise.
+
+---
+
+# Part 3 – The Optimization Cycle (Procedural Application)
+
+Given:
+
+$$
+x^{(1)}=
+\begin{bmatrix}
+2\\
+1
+\end{bmatrix},
+\qquad
+y^{(1)}=5
+$$
+
+Current parameters:
+
+$$
+w=
+\begin{bmatrix}
+1.5\\
+1.0
+\end{bmatrix},
+\qquad
+b=0
+$$
+
+---
+
+## Q4. Manual Forward Pass
+
+The prediction of a linear model is
+
+$$
+\hat{y}=w^Tx+b.
+$$
+
+Substitute the given values:
+
+$$
+\hat{y}
+=
+\begin{bmatrix}
+1.5 & 1.0
+\end{bmatrix}
+\begin{bmatrix}
+2\\
+1
+\end{bmatrix}
++0
+$$
+
+Perform the matrix multiplication:
+
+$$
+= (1.5)(2) + (1.0)(1)
+$$
+
+$$
+=3+1
+$$
+
+$$
+=4
+$$
+
+Therefore,
+
+$$
+\boxed{\hat{y}^{(1)}=4}
+$$
+
+---
+
+## Q5. Loss Calculation
+
+The Squared Error (SE) for a single sample is
+
+$$
+SE=(\hat{y}-y)^2.
+$$
+
+Substitute the values:
+
+$$
+SE=(4-5)^2
+$$
+
+$$
+=(-1)^2
+$$
+
+$$
+=1
+$$
+
+Therefore,
+
+$$
+\boxed{SE=1}
+$$
+
+### Interpretation
+
+The squared error measures how far the model's prediction is from the actual value.
+
+- If the loss is **0**, the prediction is perfect.
+- A larger loss indicates a greater prediction error.
+
+For this sample, the loss of **1** tells the optimizer that the model **underestimated** the true energy output by **1 MW**. The optimizer uses this scalar value, together with the gradient, to determine how the model parameters should be adjusted to reduce future prediction errors.
+
+---
+
+## Q6. Gradient Intuition
+
+The optimizer aims to minimize the loss by updating the parameters in the direction that reduces prediction error.
+
+Suppose the prediction is **too high** (overestimation), meaning
+
+$$
+\hat{y}>y.
+$$
+
+To reduce the prediction, the optimizer should:
+
+- Decrease the weights that contribute positively to the prediction.
+- Decrease the bias if it also contributes to the overestimation.
+
+Conceptually, the parameter update is
+
+$$
+\theta_{\text{new}}
+=
+\theta_{\text{old}}
+-
+\alpha\nabla J(\theta),
+$$
+
+where:
+
+- $\alpha$ is the learning rate.
+- $\nabla J(\theta)$ is the gradient of the loss function.
+
+The optimizer repeatedly moves the parameters downhill on the loss surface until reaching a minimum.
+
+### Simple Loss Surface Illustration
+
+```text
+Loss J(θ)
+ ^
+ |                    ● Initial Parameters
+ |                  /
+ |                /
+ |              /
+ |            /
+ |          /
+ |        ● Minimum Loss
+ +---------------------------------> Parameters θ
+```
+
+The optimizer follows the negative gradient (downhill direction), gradually updating the parameters so that the predicted energy output becomes closer to the actual value and the loss decreases over successive iterations.
